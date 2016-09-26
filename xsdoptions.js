@@ -29,13 +29,17 @@ var xsdoptions = {
     },
 
     link: function (selector, typename, formatter) {
-        xsdoptions.data(typename);
+        if (xsdoptions.ready) {
+            xsdoptions.ready(function () {
+                xsdoptions.data(typename);
 
-        xsdoptions.domListener(selector, function () {
-            var $elem = $(this);
-            var values = xsdoptions.data(typename);
-            xsdoptions.populate($elem, values, formatter);
-        });
+                xsdoptions.domListener(selector, function () {
+                    var $elem = $(this);
+                    var values = xsdoptions.data(typename);
+                    xsdoptions.populate($elem, values, formatter);
+                });
+            });
+        }
     },
 
     domListener: function(selector, callback) {
