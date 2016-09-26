@@ -63,7 +63,7 @@ $(document).ready (function(){
             message.hide();
             $element.stop();
             $element.css({ borderColor: $element.data("original-border-color") });
-            $element.animate({ color: COLOR.valid }, 500);
+            $element.animate({ color: COLOR.valid }, 200);
 
             $element.data("valid", true);
 
@@ -72,8 +72,11 @@ $(document).ready (function(){
                 message.show();
                 $element.stop();
             }
+
             if (showErrors || colorsOnly) {
-                $element.animate({ color: COLOR.invalid, borderColor: COLOR.invalid }, 500);
+                $element.animate({ color: COLOR.invalid }, 200, function() {
+                    $element.css({ borderColor: COLOR.invalid });
+                });
             }
 
             $element.data("valid", false);
@@ -88,11 +91,13 @@ $(document).ready (function(){
 
             sibling.change(function () {
                 $element.data("check")(false, true, true);
-                toggleButton();
+                //toggleButton();
             });
             sibling.keyup(function () {
-                $element.data("check")(false, true, true);
-                toggleButton();
+                if (sibling.val().length <= 1) {
+                    $element.data("check")(false, true, true);
+                }
+                //toggleButton();
             });
 
             console.debug ("fieldValidator requires", describe($element), "when there is", describe(sibling));
@@ -114,7 +119,7 @@ $(document).ready (function(){
             function createCheck(usePatterns) {
                 return function(logErrors) {
                     var sibling = $element.data("required-if");
-                    var passedrequired = (!required || $element.val().length > 0);
+                    var passedrequired = (!required || $element.val() && $element.val().length > 0);
                     var passedpattern = (!usePatterns || !pattern || $element.val().length === 0 || (new RegExp(pattern).test($element.val())));
                     var passedsibling = (!sibling || $(sibling).val().length === 0 || $element.val().length > 0);
 
@@ -132,7 +137,26 @@ $(document).ready (function(){
                 }
             };
 
-            if ($element.is("textarea") || ($element.is("input") && ($element.attr("type") === "text") || $element.attr("type") === "email")) {
+            if ($element.is("select")) {
+                $element.data("field-validator", "enabled");
+
+                check = createCheck(false /* Will not test using the pattern attribute value even if provided. */);
+
+                $element.click(function() {
+                    $element.stop();
+                    $element.css({
+                        color: $element.data("original-text-color"),
+                        borderColor: $element.data("original-border-color")
+                    });
+                });
+
+                $element.change(function() {
+                    fieldValid(true, true);
+                });
+
+                added = true;
+
+            } else if ($element.is("textarea") || ($element.is("input") && ($element.attr("type") === "text") || $element.attr("type") === "email")) {
                 $element.data("field-validator", "enabled");
 
                 if ($element.attr("type") === "email") pattern = PATTERNS.email;
@@ -164,24 +188,7 @@ $(document).ready (function(){
                 });
 
                 added = true;
-
-            } else if ($element.is("select")) {
-                $element.data("field-validator", "enabled");
-
-                check = createCheck(false /* Will not test using the pattern attribute value even if provided. */);
-
-                $element.change(function () {
-                    $element.css({
-                        color: $element.data("original-text-color"),
-                        borderColor: $element.data("original-border-color")
-                    });
-
-                    fieldValid(true, true);
-                });
-
-                added = true;
             }
-
 
             if (added) {
                 console.debug ("fieldValidator activated:", describe($element));
