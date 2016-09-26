@@ -68,6 +68,7 @@ var xsdoptions = {
 
     populate: function ($elem, values, formatter) {
         if ($elem.find("option").length <= 1) {
+            if ($elem.find("option").length === 0) $elem.append("<option value=\"\"></option>");
             $(values).each(function () {
                 if (!formatter) {
                     $elem.append("<option value=\"" + this.value + "\">" + this.label + "</option>");
