@@ -1,22 +1,40 @@
-var fieldValidator;
 
+// The initial api for configuring the validator is available immediately.
+var fieldValidator = function(){
+    var handler;
+
+    return {
+        fieldSelector: ".form-control",
+        errorSelector: ".form-error",
+
+        inputDelay: 1000,
+        animDelay: 500,
+
+        colorValid: "#1414B8",
+        colorInvalid: "red",
+
+        describe: function (element, value) {
+            return "<" + $(element)[0].tagName + "/> " + ($(element).attr("id") || $(element).attr("name")) + (!value ? "" : ": " + $(element).val());
+        },
+
+        onvalid: function (callback) {
+            if (callback) {
+                handler = callback;
+            } else {
+                return handler;
+            }
+        }
+    }
+}();
+
+
+// We initialize all the validator core functionality after the document loads.
 $(document).ready (function(){
-    const DELAY = 1000;
-
     const PATTERNS = {
         email: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
     };
 
-    const COLOR = {
-        valid: "#1414B8",
-        invalid: "red"
-    };
-
     var submit;
-
-    function describe(element, value) {
-        return "<" + $(element)[0].tagName + "/> " + ($(element).attr("id") || $(element).attr("name")) + (!value ? "" : ": " + $(element).val());
-    }
 
     function toggleButton(submitButton) {
         if (submitButton) {
@@ -44,7 +62,7 @@ $(document).ready (function(){
         if (!options) options = { showErrors: true, triggerButton: true, colorsOnly: false };
         var valid = true;
 
-        $(".form-control:visible").each(function () {
+        $(fieldValidator.fieldSelector + ":visible").each(function () {
             if (lazy) {
                 if ($(this).data("field-validator") === "enabled" && !$(this).data("valid")) {
                     valid = false;
@@ -63,7 +81,7 @@ $(document).ready (function(){
             message.hide();
             $element.stop();
             $element.css({ borderColor: $element.data("original-border-color") });
-            $element.animate({ color: COLOR.valid }, 200);
+            $element.animate({ color: fieldValidator.colorValid }, fieldValidator.animDelay);
 
             $element.data("valid", true);
 
@@ -74,8 +92,8 @@ $(document).ready (function(){
             }
 
             if (showErrors || colorsOnly) {
-                $element.animate({ color: COLOR.invalid }, 200, function() {
-                    $element.css({ borderColor: COLOR.invalid });
+                $element.animate({ color: fieldValidator.colorInvalid }, fieldValidator.animDelay, function() {
+                    $element.css({ borderColor: fieldValidator.colorInvalid });
                 });
             }
 
@@ -83,24 +101,33 @@ $(document).ready (function(){
         }
 
         if (triggerButton) toggleButton();
+
+        return $element.data("valid");
     }
 
-    function addSibling($element, otherelem) {
+    function sibling($element, otherelem, circular) {
         if (otherelem) {
-            var sibling = $(otherelem);
+            var $sibling = $(otherelem);
 
-            sibling.change(function () {
+            if ($element.data("required-if") === undefined) {
+                $element.data("required-if", $sibling);
+            }
+
+            $sibling.change(function () {
                 $element.data("check")(false, true, true);
-                //toggleButton();
             });
-            sibling.keyup(function () {
-                if (sibling.val().length <= 1) {
+
+            $sibling.keyup(function () {
+                if (!$sibling.val() || $sibling.val().length <= 1) {
                     $element.data("check")(false, true, true);
                 }
-                //toggleButton();
             });
 
-            console.debug ("fieldValidator requires", describe($element), "when there is", describe(sibling));
+            console.debug ("fieldValidator requires", fieldValidator.describe($element), "when there is", fieldValidator.describe($sibling));
+
+            if (circular) {
+                sibling(otherelem, $element, false);
+            }
         }
     }
 
@@ -108,34 +135,39 @@ $(document).ready (function(){
         if (!$element.data("validate")) {
             var required = $element[0].hasAttribute("required");
             var pattern = $element.attr("pattern");
-            var message = $element.siblings(".form-error");
+            var message = $element.siblings(fieldValidator.errorSelector);
             var added;
             var check;
 
             function fieldValid(showErrors, triggerButton, colorsOnly) {
-                displayValid($element, message, check, showErrors, triggerButton, colorsOnly);
+                return displayValid($element, message, check, showErrors, triggerButton, colorsOnly);
+            }
+
+            function handleInput() {
+                var c = fieldValidator.onvalid();
+                if (fieldValid(true, true) && c) c($element);
             }
 
             function createCheck(usePatterns) {
                 return function(logErrors) {
                     var sibling = $element.data("required-if");
                     var passedrequired = (!required || $element.val() && $element.val().length > 0);
-                    var passedpattern = (!usePatterns || !pattern || $element.val().length === 0 || (new RegExp(pattern).test($element.val())));
-                    var passedsibling = (!sibling || $(sibling).val().length === 0 || $element.val().length > 0);
+                    var passedpattern = (!usePatterns || !pattern || !$element.val() || $element.val().length === 0 || (new RegExp(pattern).test($element.val())));
+                    var passedsibling = (!sibling || !$(sibling).val() || $(sibling).val().length === 0 || ($element.val() && $element.val().length > 0));
 
                     if (logErrors) {
-                        if (!passedrequired) console.debug ("fieldValidator required field not entered", describe($element));
-                        if (!passedpattern) console.debug ("fieldValidator failed pattern match", describe($element, true));
-                        if (!passedsibling) console.debug ("fieldValidator requires field", describe($element), "because of required-if", describe(sibling));
+                        if (!passedrequired) console.debug ("fieldValidator required field not entered", fieldValidator.describe($element));
+                        if (!passedpattern) console.debug ("fieldValidator failed pattern match", fieldValidator.describe($element, true));
+                        if (!passedsibling) console.debug ("fieldValidator requires field", fieldValidator.describe($element), "because of required-if", fieldValidator.describe(sibling));
                     }
 
                     if (!$element.data("valid") && passedrequired && passedpattern && passedsibling) {
-                        console.log ("fieldValidator VALID ::", describe($element));
+                        console.log ("fieldValidator VALID ::", fieldValidator.describe($element));
                     }
 
                     return (passedrequired && passedpattern && passedsibling)
                 }
-            };
+            }
 
             if ($element.is("select")) {
                 $element.data("field-validator", "enabled");
@@ -151,7 +183,7 @@ $(document).ready (function(){
                 });
 
                 $element.change(function() {
-                    fieldValid(true, true);
+                    handleInput();
                 });
 
                 added = true;
@@ -175,8 +207,8 @@ $(document).ready (function(){
 
                 $element.keyup(function () {
                     clearTimeout(timer);
-                    if ($element.val().length > 0) {
-                        timer = window.setTimeout(function() { fieldValid(true, true) }, DELAY);
+                    if ($element.val() && $element.val().length > 0) {
+                        timer = window.setTimeout(function() { handleInput() }, fieldValidator.inputDelay);
                     } else {
                         message.hide();
                     }
@@ -184,21 +216,21 @@ $(document).ready (function(){
 
                 $element.blur(function () {
                     clearTimeout(timer);
-                    fieldValid(true, true);
+                    handleInput();
                 });
 
                 added = true;
             }
 
             if (added) {
-                console.debug ("fieldValidator activated:", describe($element));
+                console.debug ("fieldValidator activated:", fieldValidator.describe($element));
 
                 $element.data("check", fieldValid);
                 $element.data("original-border-color", $element.css("borderColor"));
                 $element.data("original-text-color", $element.css("color"));
 
                 if ($element.data("required-if")) {
-                    addSibling($element, $element.data("required-if"));
+                    sibling($element, $element.data("required-if"));
                 }
 
                 message.hide();
@@ -213,7 +245,7 @@ $(document).ready (function(){
     }
 
     // Grab currently available form fields.
-    $(".form-control").each(function() {
+    $(fieldValidator.fieldSelector).each(function() {
         registerInput ($(this));
     });
 
@@ -221,7 +253,7 @@ $(document).ready (function(){
     var observer = new MutationObserver(function(mutations) {
         mutations.forEach(function(mutation) {
             mutation.addedNodes.forEach(function(node) {
-                $(node).find(".form-control").each(function() {
+                $(node).find(fieldValidator.fieldSelector).each(function() {
                     registerInput ($(this));
                 });
             });
@@ -237,30 +269,25 @@ $(document).ready (function(){
 
     observer.observe(document, toObserve);
 
-    $.fn.requiredif = function(elem) {
+    $.fn.requiredif = function(elem, circular) {
         var $field = $(this);
 
-        if (elem) {
+        function registerSibling() {
             if ($field.data("field-validator") === "enabled") {
-                $field.data("required-if", elem);
-                addSibling($field, elem);
-
-            } else {
-                window.setTimeout(function () {
-                    if ($field.data("field-validator") === "enabled") {
-                        $field.data("required-if", elem);
-                        addSibling($field, elem);
-                    } else {
-                        console.log ("Element is not a field-validator instance.", describe($field));
-                    }
-                }, 500);
+                sibling($field, elem, circular);
+                return true;
             }
+        }
+
+        if (!registerSibling()) {
+            window.setTimeout(function () {
+                if (!registerSibling()) {
+                    console.log ("Element is not a field-validator instance.", fieldValidator.describe($field));
+                }
+            }, 500);
         }
     };
 
-    fieldValidator = {
-        toggleButton: toggleButton,
-        validate: validate
-    };
-
+    fieldValidator.toggleButton = toggleButton;
+    fieldValidator.validate = validate;
 });
