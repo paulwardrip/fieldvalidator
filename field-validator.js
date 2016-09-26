@@ -8,7 +8,6 @@ $(document).ready (function(){
     };
 
     const COLOR = {
-        typing: "black",
         valid: "#1414B8",
         invalid: "red"
     };
@@ -144,7 +143,10 @@ $(document).ready (function(){
 
                 $element.keydown(function () {
                     $element.stop();
-                    $element.css({ color: COLOR.typing, borderColor: $element.data("original-border-color") });
+                    $element.css({
+                        color: $element.data("original-text-color"),
+                        borderColor: $element.data("original-border-color")
+                    });
                 });
 
                 $element.keyup(function () {
@@ -169,6 +171,11 @@ $(document).ready (function(){
                 check = createCheck(false /* Will not test using the pattern attribute value even if provided. */);
 
                 $element.change(function () {
+                    $element.css({
+                        color: $element.data("original-text-color"),
+                        borderColor: $element.data("original-border-color")
+                    });
+
                     fieldValid(true, true);
                 });
 
@@ -181,6 +188,7 @@ $(document).ready (function(){
 
                 $element.data("check", fieldValid);
                 $element.data("original-border-color", $element.css("borderColor"));
+                $element.data("original-text-color", $element.css("color"));
 
                 if ($element.data("required-if")) {
                     addSibling($element, $element.data("required-if"));
@@ -188,7 +196,7 @@ $(document).ready (function(){
 
                 message.hide();
 
-                if ($element.val().length > 0) {
+                if ($element.val() && $element.val().length > 0) {
                     fieldValid(false, false);
                 } else {
                     $element.data("valid", !required);
@@ -213,16 +221,14 @@ $(document).ready (function(){
         });
     });
 
-    observer.observe(document, {//
+    var toObserve = {
+        attributes: false,
+        characterData: false,
         childList: true,
         subtree: true
-    });
+    };
 
-    fieldValidator = {
-        toggleButton: toggleButton,
-        validate: validate
-    }
-
+    observer.observe(document, toObserve);
 
     $.fn.requiredif = function(elem) {
         var $field = $(this);
@@ -244,4 +250,10 @@ $(document).ready (function(){
             }
         }
     };
+
+    fieldValidator = {
+        toggleButton: toggleButton,
+        validate: validate
+    };
+
 });
