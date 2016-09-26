@@ -17,7 +17,9 @@ var xsdoptions = {
             var arr = [];
             if (xsdoptions.xsd) {
                 xsdoptions.xsd.find("simpleType[name='" + typename + "']").find("enumeration").each(function () {
-                    arr.push({value: $(this).attr("value"), label: $(this).find("documentation").text()});
+                    var label = null;
+                    $(this).find("documentation").each(function() { label = this.text(); });
+                    arr.push({ value: $(this).attr("value"), label: (label) ? label : $(this).attr("value") });
                 })
             }
 
