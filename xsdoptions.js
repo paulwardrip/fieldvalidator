@@ -1,11 +1,12 @@
 var xsdoptions = {
     load: function (url) {
-        var promise = $.get(url);
-        xsdoptions.ready = promise.done;
-        promise.done(function (xml) {
+        var promise = $.get(url, {}, function (xml) {
             xsdoptions.xsd = $(xml);
+            console.log (xsdoptions.xsd);
             xsdoptions.collection = {};
-        });
+        }, "xml");
+
+        xsdoptions.ready = promise.done;
         return promise;
     },
 
