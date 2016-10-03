@@ -151,9 +151,28 @@ $(document).ready (function(){
             function createCheck(usePatterns) {
                 return function(logErrors) {
                     var sibling = $element.data("required-if");
+                    var siblingvalues = $element.data("required-values");
+                    var siblingdataname = $element.data("required-dataname");
                     var passedrequired = (!required || $element.val() && $element.val().length > 0);
                     var passedpattern = (!usePatterns || !pattern || !$element.val() || $element.val().length === 0 || (new RegExp(pattern).test($element.val())));
-                    var passedsibling = (!sibling || !$(sibling).val() || $(sibling).val().length === 0 || ($element.val() && $element.val().length > 0));
+                    var passedsibling = true;
+
+                    if (sibling) {
+                        if (siblingvalues) {
+                            var values = siblingvalues.split(",");
+                            for (var idx in values) {
+                                if ((siblingdataname && $(sibling).find(":selected").data(siblingdataname) === values[idx].trim()) ||
+                                    (!siblingdataname && $(sibling).val() === values[idx])) {
+                                    passedsibling = ($element.val()) ? true : false;
+                                    break;
+                                }
+                            }
+                        } else {
+                            if ($(sibling).val()) {
+                                passedsibling = ($element.val()) ? true : false;
+                            }
+                        }
+                    }
 
                     if (logErrors) {
                         if (!passedrequired) console.debug ("fieldValidator required field not entered", fieldValidator.describe($element));
@@ -274,7 +293,7 @@ $(document).ready (function(){
 
         function registerSibling() {
             if ($field.data("field-validator") === "enabled") {
-                sibling($field, elem, circular);
+                sibling($field, $(elem), circular);
                 return true;
             }
         }
