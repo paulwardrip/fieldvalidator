@@ -2,7 +2,6 @@ var xsdoptions = {
     load: function (url) {
         var promise = $.get(url, {}, function (xml) {
             xsdoptions.xsd = $(xml);
-            console.log (xsdoptions.xsd);
             xsdoptions.collection = {};
         }, "xml");
 
@@ -10,24 +9,23 @@ var xsdoptions = {
         return promise;
     },
 
-    data: function (typename) {
-        if (xsdoptions.collection[typename]) {
+    data: function (typename, append) {
+        if (xsdoptions.collection[typename] && !append) {
             return xsdoptions.collection[typename];
 
         } else {
-            var arr = [];
+            if (!xsdoptions.collection[typename]) xsdoptions.collection[typename] = [];
             if (xsdoptions.xsd) {
                 xsdoptions.xsd.find("simpleType[name='" + typename + "']").find("enumeration").each(function () {
                     var label = null;
                     $(this).find("documentation").each(function() { label = $(this).text(); });
-                    arr.push({ value: $(this).attr("value"), label: (label) ? label : $(this).attr("value") });
+                    xsdoptions.collection[typename].push({ value: $(this).attr("value"), label: (label) ? label : $(this).attr("value") });
                 })
             }
 
-            xsdoptions.collection[typename] = arr;
-            console.log ("Loaded " + arr.length + " enumerated options from simpleType: " + typename);
+            console.log ("Loaded " + xsdoptions.collection[typename].length + " enumerated options from simpleType: " + typename);
 
-            return arr;
+            return xsdoptions.collection[typename];
         }
     },
 
