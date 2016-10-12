@@ -3,10 +3,5 @@ A slick, responsive form validator for jQuery that checks a field when the user 
 
 optional files
 * xsdoptions.js : allows you to populate select boxes using an enumeration from an xsd.
-* titlecase.js : a string prototype that provides the function toTitleCase().
 
-todo
-* make selector for inputs and selector for error messages configurable.
-* make colors and timing values configurable.
-* implement commonly used validations as input type values, such as creditcard money, etc (email is currently provided).
-* implement normalization (fixing the values the user types).
+
