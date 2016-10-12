@@ -14,7 +14,8 @@ var fieldValidator = function(){
         colorInvalid: "red",
 
         describe: function (element, value) {
-            return "<" + $(element)[0].tagName + "/> " + ($(element).attr("id") || $(element).attr("name")) + (!value ? "" : ": " + $(element).val());
+            return "<" + $(element)[0].tagName + "/> " + ($(element).attr("id") || $(element).attr("name")) + 
+                (!value ? "" : ": " + $(element).val());
         },
 
         onvalid: function (callback) {
@@ -89,7 +90,8 @@ $(document).ready (function(){
                     return false;
                 }
             } else {
-                if ($(this).data("check") && !$(this).data("check")(options.showErrors, options.triggerButton, options.colorsOnly)) valid = false;
+                if ($(this).data("check") && !$(this).data("check")(options.showErrors, options.triggerButton, options.colorsOnly)) 
+                    valid = false;
             }
         });
 
@@ -143,7 +145,8 @@ $(document).ready (function(){
                 }
             });
 
-            console.debug ("fieldValidator requires", fieldValidator.describe($element), "when there is", fieldValidator.describe($sibling));
+            console.debug ("fieldValidator requires", fieldValidator.describe($element), "when there is", 
+                           fieldValidator.describe($sibling));
 
             if (circular) {
                 sibling(otherelem, $element, false);
@@ -161,7 +164,9 @@ $(document).ready (function(){
             var timer;
 
             function fieldOption(name) {
-                return ($element.data(name) && ($element.data(name).toLowerCase() === "on" || $element.data(name).toLowerCase() === "true" || $element.data(name).toLowerCase() === "enabled"));
+                return ($element.data(name) && ($element.data(name).toLowerCase() === "on" || 
+                                                $element.data(name).toLowerCase() === "true" || 
+                                                $element.data(name).toLowerCase() === "enabled"));
             }
 
             function fieldValid(showErrors, triggerButton, colorsOnly) {
@@ -245,7 +250,8 @@ $(document).ready (function(){
                     var siblingvalues = $element.data("required-values");
                     var siblingdataname = $element.data("required-dataname");
                     var passedrequired = (!required || $element.val() && $element.val().length > 0);
-                    var passedpattern = (!usePatterns || !pattern || !$element.val() || $element.val().length === 0 || (new RegExp(pattern).test($element.val())));
+                    var passedpattern = (!usePatterns || !pattern || !$element.val() || $element.val().length === 0 ||
+                                         (new RegExp(pattern).test($element.val())));
                     var passedsibling = true;
 
                     if (sibling) {
@@ -266,9 +272,13 @@ $(document).ready (function(){
                     }
 
                     if (logErrors) {
-                        if (!passedrequired) console.debug ("fieldValidator required field not entered", fieldValidator.describe($element));
-                        if (!passedpattern) console.debug ("fieldValidator failed pattern match", fieldValidator.describe($element, true));
-                        if (!passedsibling) console.debug ("fieldValidator requires field", fieldValidator.describe($element), "because of required-if", fieldValidator.describe(sibling));
+                        if (!passedrequired) console.debug ("fieldValidator required field not entered", 
+                                                            fieldValidator.describe($element));
+                        if (!passedpattern) console.debug ("fieldValidator failed pattern match", 
+                                                           fieldValidator.describe($element, true));
+                        if (!passedsibling) console.debug ("fieldValidator requires field", 
+                                                           fieldValidator.describe($element), "because of required-if", 
+                                                           fieldValidator.describe(sibling));
                     }
 
                     if (!$element.data("valid") && passedrequired && passedpattern && passedsibling) {
@@ -354,7 +364,8 @@ $(document).ready (function(){
                         if (isNaN(parsed.getDate())) {
                             return fail();
                         }
-                        formatted = (parsed.getMonth() + 1).toString().pad(2) + "/" + parsed.getDate().toString().pad(2) + "/" + parsed.getFullYear();
+                        formatted = (parsed.getMonth() + 1).toString().pad(2) + "/" + parsed.getDate().toString().pad(2) + "/" + 
+                            parsed.getFullYear();
                         console.log("Parsed " + $element.val() + " as date " + formatted);
                         return true;
 
@@ -426,7 +437,8 @@ $(document).ready (function(){
 
                         function showicon(img) {
                             if (icons) {
-                                $element.css({ background: "url(" + img + ")", backgroundRepeat: "no-repeat", backgroundPosition: "98% center" });
+                                $element.css({ background: "url(" + img + ")", backgroundRepeat: "no-repeat", 
+                                              backgroundPosition: "98% center" });
                             }
                         }
 
