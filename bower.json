@@ -1,5 +1,5 @@
 {
-  "name": "field-validator",
+  "name": "fieldvalidator",
   "homepage": "https://github.com/paulwardrip/fieldvalidator",
   "description": "a jquery form validation library",
   "main": "field-validator.js",
