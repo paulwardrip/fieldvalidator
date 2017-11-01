@@ -1,6 +1,32 @@
 # field-validator.js
 A slick, responsive form validator for jQuery that checks a field when the user stops typing or moves on to the next field. When a field is valid the text fades to blue, when invalid the text and border change to red and an error message can be displayed, these effects are removed when the user starts typing again. It uses the html required and pattern attributes. There is also support for declaring fields that are only required when a related field has a value. The library automatically finds all the inputs on the page, including any that are added to the page dynamically at any time.
 
+# Options
+```
+fieldValidator.option = "new value";
+```
+*fieldSelector*: the selector that will find the fields on the page that should be validated, default is ".form-control"
+
+*errorSelector*: the selector that will find a sibling element that shows an error message, default is".form-error"
+
+*inputDelay*: how long to wait for the user to stop typing before validating, in milliseconds, default is: 2000
+
+*animDelay*: how long to animate the status color changes, in milliseconds, default is: 500
+
+*colorValid*: the color to make the text when it's valid, default: "blue"
+
+*colorInvalid*: the color to make the text when it's not valid, default: "red"
+
+*borderValid*: the color to make the input border when it's valid, by default this is whatever color the input border was originally.
+
+*borderInvalid*: the color to make the input border when it's not valid, default: "red"
+
+*backgroundValid*: the color to make the input background when it's valid, this is not set by default.
+
+*backgroundInvalid*: the color to make the input background when it's not valid, this is not set by default.
+
+# Validation
+
 Basic Example:
 ```html
 <input type="text" class="form-control" required pattern="^[0-9]$" />
