@@ -1,0 +1,13 @@
+{
+  "name": "field-validator",
+  "version": "1.1.0",
+  "main": "field-validator.js",
+  "private": false,
+  "repository": "https://github.com/paulwardrip/fieldvalidator.git",
+  "license": "MIT",
+  "devDependencies": {
+    "grunt": "^1.0.1",
+    "grunt-contrib-watch": "^1.0.0",
+    "grunt-contrib-uglify": "^3.0.1"
+  }
+}

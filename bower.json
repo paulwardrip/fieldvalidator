@@ -1,0 +1,26 @@
+{
+  "name": "field-validator",
+  "homepage": "https://github.com/paulwardrip/fieldvalidator",
+  "description": "a jquery form validation library",
+  "main": "field-validator.js",
+  "keywords": [
+    "validation",
+    "realtime",
+    "jquery"
+  ],
+  "authors": [
+    "Paul Wardrip <pwardrip@gmail.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "index.html"
+  ],
+  "dependencies": {
+    "jquery": "^3.2.1"
+  }
+}

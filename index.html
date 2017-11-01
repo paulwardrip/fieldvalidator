@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet"/>
+    <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script src="field-validator.js"></script>
+    <style>
+        label {
+            display: inline-block;
+            width: 350px
+        }
+        input {
+            width: 350px;
+            padding: 2px
+        }
+        body {
+            font-family: Raleway;
+            font-size: 15px;
+        }
+    </style>
+    <script>
+        fieldValidator.backgroundValid = "rgb(240, 240, 255)";
+        fieldValidator.backgroundInvalid = "rgb(255, 240, 240)";
+    </script>
+</head>
+<body>
+    <h1>fieldvalidator demo page</h1>
+
+    <p>
+        <div><label>This Field is Required:</label> <input type="text" id="req" class="form-control" required /></div>
+        <div><label>A Person's Full Name:</label> <input type="text" class="form-control" pattern="^[a-zA-Z ,.'-]+$" /></div>
+        <div><label>Three Four-Letter Words:</label> <input type="text" class="form-control" pattern="^[a-zA-Z]{4} [a-zA-Z]{4} [a-zA-Z]{4}$" /></div>
+        <div><label>An Email Address:</label> <input type="text" class="form-control" data-type="email" /></div>
+    </p>
+
+    <p>
+        <div><label>A Number:</label> <input type="text" class="form-control" pattern="^[0-9]*$" /></div>
+        <div><label>A Single Digit:</label> <input type="text" class="form-control" pattern="^[0-9]$" /></div>
+        <div><label>An Amount of Money:</label> <input type="text" class="form-control" data-type="money" /></div>
+        <div><label>A Credit Card Number:</label> <input type="text" class="form-control" data-type="creditcard" /></div>
+    </p>
+
+    <p>
+        <div><label>This Field Will Become Title Case:</label> <input type="text" class="form-control" data-format="titlecase" /></div>
+        <div><label>This Number Will Be Padded:</label> <input type="text" class="form-control" pattern="^[0-9]{1,10}$" data-pad="10" /></div>
+        <div><label>Type a Date, Nearly Any Format Will Work:</label> <input type="text" class="form-control" data-type="date" /></div>
+    </p>
+
+<script>
+    $(document).ready(function () {
+        $("#req").focus();
+    });
+</script>
+</body>
+</html>
