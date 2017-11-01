@@ -44,10 +44,3 @@ Would convert 4 to 0004.
 ```
 Converts HELLO to XXXXXHELLO.
 
-# jsontoxml.js 
-Generate XML from a javascript / json object structure. Supports nested objects, arrays of objects and string values. Any object with a property named attributes will get the values inside that object represented as XML attributes rather than child elements containing text. 
-toXML(obj) returns an xml string.
-
-# xsdoptions.js
-Allows you to populate select boxes using an enumeration from an xsd. 
-Examples soon.
